@@ -430,7 +430,6 @@ html{scroll-behavior:auto}
     <div class="info-loc">
       <span class="info-loc-eyebrow">📍 Dónde encontrarme</span>
       <a href="https://maps.google.com/?q=Calle+de+Bretón+de+los+Herreros+45+Chamberí+Madrid" target="_blank" rel="noopener" class="info-loc-addr" style="color:#0A0A0A;text-decoration:none;border-bottom:1px solid rgba(0,0,0,.2);transition:border-color .2s" onmouseover="this.style.borderColor='#E02B4C'" onmouseout="this.style.borderColor='rgba(0,0,0,.2)'">Calle de Bretón de los Herreros, 45<br>Chamberí, 28003 Madrid</a>
-      <span class="info-loc-sub">Acceso por metro Ríos Rosas · L7</span>
     </div>
     <div class="info-center">
       <div class="info-local-name">MACA HAIR THERAPY <span class="info-local-rose">🌹</span></div>
@@ -456,12 +455,19 @@ html{scroll-behavior:auto}
     </div>
     <div class="gal-h-scroll">
       <div class="gal-h-inner">
-        <div class="gal-h-item"><div class="gal-h-ph"><span>Foto trabajo</span></div><div class="gal-h-tag">Chrome nails</div></div>
-        <div class="gal-h-item"><div class="gal-h-ph"><span>Foto trabajo</span></div><div class="gal-h-tag">Nail art</div></div>
-        <div class="gal-h-item"><div class="gal-h-ph"><span>Foto trabajo</span></div><div class="gal-h-tag">French</div></div>
-        <div class="gal-h-item"><div class="gal-h-ph"><span>Foto trabajo</span></div><div class="gal-h-tag">Gel color</div></div>
-        <div class="gal-h-item"><div class="gal-h-ph"><span>Foto trabajo</span></div><div class="gal-h-tag">Press on</div></div>
-        <div class="gal-h-item"><div class="gal-h-ph"><span>Foto trabajo</span></div><div class="gal-h-tag">Acrílico</div></div>
+        <div class="gal-h-item"><img src="Fotos/Francesa.jpeg" alt="Francesa" loading="lazy"><div class="gal-h-tag">Francesa</div></div>
+        <div class="gal-h-item"><img src="Fotos/Nail%20art%203D.jpeg" alt="Nail art 3D" loading="lazy"><div class="gal-h-tag">Nail art 3D</div></div>
+        <div class="gal-h-item"><img src="Fotos/Mix%20%26%20Match.jpeg" alt="Mix &amp; Match" loading="lazy"><div class="gal-h-tag">Mix &amp; Match</div></div>
+        <div class="gal-h-item"><img src="Fotos/Flores%203D.jpeg" alt="Flores 3D" loading="lazy"><div class="gal-h-tag">Flores 3D</div></div>
+        <div class="gal-h-item"><img src="Fotos/Francesa%202.jpeg" alt="Francesa" loading="lazy"><div class="gal-h-tag">Francesa</div></div>
+        <div class="gal-h-item"><img src="Fotos/Nail%20art.jpeg" alt="Nail art" loading="lazy"><div class="gal-h-tag">Nail art</div></div>
+        <div class="gal-h-item"><img src="Fotos/Mix%20%26%20Match%202.jpeg" alt="Mix &amp; Match" loading="lazy"><div class="gal-h-tag">Mix &amp; Match</div></div>
+        <div class="gal-h-item"><img src="Fotos/Flores%20en%203D%2C%20relieves%2C%20degradados.jpeg" alt="Flores en 3D, relieves, degradados" loading="lazy"><div class="gal-h-tag">Flores en 3D, relieves, degradados</div></div>
+        <div class="gal-h-item"><img src="Fotos/Francesa%203.jpeg" alt="Francesa" loading="lazy"><div class="gal-h-tag">Francesa</div></div>
+        <div class="gal-h-item"><img src="Fotos/Nail%20art%203D%202.jpeg" alt="Nail art 3D" loading="lazy"><div class="gal-h-tag">Nail art 3D</div></div>
+        <div class="gal-h-item"><img src="Fotos/Mix%20%26%20Match%203.jpeg" alt="Mix &amp; Match" loading="lazy"><div class="gal-h-tag">Mix &amp; Match</div></div>
+        <div class="gal-h-item"><img src="Fotos/Degradados%20con%20aer%C3%B3grafo.jpeg" alt="Degradados con aerógrafo" loading="lazy"><div class="gal-h-tag">Degradados con aerógrafo</div></div>
+        <div class="gal-h-item"><img src="Fotos/Flores%203d%202.jpeg" alt="Flores 3D" loading="lazy"><div class="gal-h-tag">Flores 3D</div></div>
       </div>
     </div>
   </div>
@@ -694,12 +700,31 @@ document.querySelectorAll('.reveal,.reveal-l').forEach(el=>obs.observe(el));
       hScroll.scrollLeft = scrollLeft - (x - startX) * 1.4;
     });
     // touch support
-    let tStart;
-    hScroll.addEventListener('touchstart', e => { tStart = e.touches[0].clientX; scrollLeft = hScroll.scrollLeft; }, {passive:true});
+    let tStart, isTouching = false;
+    hScroll.addEventListener('touchstart', e => { tStart = e.touches[0].clientX; scrollLeft = hScroll.scrollLeft; isTouching = true; }, {passive:true});
     hScroll.addEventListener('touchmove',  e => {
       const dx = tStart - e.touches[0].clientX;
       hScroll.scrollLeft = scrollLeft + dx * 1.2;
     }, {passive:true});
+    hScroll.addEventListener('touchend', () => { setTimeout(() => { isTouching = false; }, 1500); }, {passive:true});
+
+    // auto-scroll suave (pausa al hover / drag / touch)
+    const inner = hScroll.querySelector('.gal-h-inner');
+    if (inner) {
+      [...inner.children].forEach(it => inner.appendChild(it.cloneNode(true)));
+      let hovering = false;
+      hScroll.addEventListener('mouseenter', () => { hovering = true; });
+      hScroll.addEventListener('mouseleave', () => { hovering = false; });
+      const tick = () => {
+        if (!isDown && !hovering && !isTouching) {
+          hScroll.scrollLeft += 0.35;
+          const half = inner.scrollWidth / 2;
+          if (hScroll.scrollLeft >= half) hScroll.scrollLeft -= half;
+        }
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }
   }
 
   /* 7. MAGNETIC BUTTONS ──────────────────────────────── */
